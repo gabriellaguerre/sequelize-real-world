@@ -12,13 +12,23 @@ router.get('/', async (req, res, next) => {
 
     // Phase 2A: Use query params for page & size
     // Your code here
+    const pageAsNumber = Number.parseInt(req.query.page);
+    const sizeAsNumber = Number.parseInt(req.query.size);
 
     // Phase 2B: Calculate limit and offset
     // Phase 2B (optional): Special case to return all students (page=0, size=0)
     // Phase 2B: Add an error message to errorResult.errors of
         // 'Requires valid page and size params' when page or size is invalid
     // Your code here
-
+    let offset = (req.query.page - 1) * req.query.size || 1;
+    let limit = req.query.size || 10;
+    console.log(limit, offset)
+    if (Number.isNaN(sizeAsNumber) && Number.isNaN(pageAsNumber)) {
+        errorResult.errors.push({
+            errors: [{ message: 'Requires valid page and size params' }],
+          });
+          res.status(400).json(errorResult.errors[0]);
+    }
     // Phase 4: Student Search Filters
     /*
         firstName filter:
@@ -69,11 +79,16 @@ router.get('/', async (req, res, next) => {
     // Phase 3A: Include total number of results returned from the query without
         // limits and offsets as a property of count on the result
         // Note: This should be a new query
+        result.count = await Student.count()
 
-    result.rows = await Student.findAll({
-        attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
-        where,
         // Phase 1A: Order the Students search results
+    result.rows = await Student.findAll({
+        where: {},
+        attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
+        order: [['lastName'], ['firstName']],
+        limit: limit,
+        offset: offset,
+
     });
 
     // Phase 2E: Include the page number as a key of page in the response data
@@ -87,6 +102,8 @@ router.get('/', async (req, res, next) => {
             }
         */
     // Your code here
+    result.page = pageAsNumber;
+
 
     // Phase 3B:
         // Include the total number of available pages for this query as a key
@@ -103,6 +120,7 @@ router.get('/', async (req, res, next) => {
             }
         */
     // Your code here
+    result.pageCount = 
 
     res.json(result);
 });

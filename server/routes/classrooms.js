@@ -32,15 +32,16 @@ router.get('/', async (req, res, next) => {
                     the studentLimit query parameter to equal the number
                 But if the studentLimit query parameter is NOT an integer, add
                     an error message of 'Student Limit should be a integer' to
-                    errorResult.errors 
+                    errorResult.errors
     */
     const where = {};
 
     // Your code here
 
     const classrooms = await Classroom.findAll({
+        where: {},
         attributes: [ 'id', 'name', 'studentLimit' ],
-        where,
+        order: [['name']]
         // Phase 1B: Order the Classroom search results
     });
 
@@ -73,7 +74,7 @@ router.get('/:id', async (req, res, next) => {
         // Phase 5C: Calculate if the classroom is overloaded by comparing the
             // studentLimit of the classroom to the number of students in the
             // classroom
-        // Optional Phase 5D: Calculate the average grade of the classroom 
+        // Optional Phase 5D: Calculate the average grade of the classroom
     // Your code here
 
     res.json(classroom);
